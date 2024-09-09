@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.impute import SimpleImputer
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
 
 def preprocess_data(df):
     # Separate numeric and non-numeric columns
@@ -26,10 +26,19 @@ def preprocess_data(df):
     print(f"Shape of non-numeric data after imputation: {non_numeric_data.shape}")
     df[non_numeric_columns] = pd.DataFrame(non_numeric_data, columns=non_numeric_columns, index=df.index)
 
+    # Encode categorical features
+    if len(non_numeric_columns) > 0:
+        encoder = OneHotEncoder(drop='first', sparse=False)
+        encoded_data = encoder.fit_transform(df[non_numeric_columns])
+        encoded_df = pd.DataFrame(encoded_data, columns=encoder.get_feature_names_out(non_numeric_columns), index=df.index)
+        df = pd.concat([df[numeric_columns], encoded_df], axis=1)
+    else:
+        df = df[numeric_columns]
+
     # Standardize numeric features
     scaler = StandardScaler()
-    scaled_numeric_data = scaler.fit_transform(df[numeric_columns])
+    scaled_numeric_data = scaler.fit_transform(df.select_dtypes(include=[np.number]))
     print(f"Shape of numeric data after scaling: {scaled_numeric_data.shape}")
-    df[numeric_columns] = pd.DataFrame(scaled_numeric_data, columns=numeric_columns, index=df.index)
+    df[df.select_dtypes(include=[np.number]).columns] = pd.DataFrame(scaled_numeric_data, columns=df.select_dtypes(include=[np.number]).columns, index=df.index)
 
     return df
