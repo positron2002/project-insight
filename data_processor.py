@@ -25,6 +25,10 @@ def preprocess_data(df):
     df[numeric_columns] = pd.DataFrame(numeric_data, columns=numeric_columns, index=df.index)
 
     # Handle missing values and categorical encoding for non-numeric columns
+    # Optionally check and convert non-string values before imputation
+    # print(df[non_numeric_columns].dtypes)  # Check data types
+    # df[non_numeric_columns] = df[non_numeric_columns].astype(str)  # Convert to string
+
     categorical_imputer = SimpleImputer(strategy='most_frequent')
     non_numeric_data = categorical_imputer.fit_transform(df[non_numeric_columns])
 
