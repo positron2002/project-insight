@@ -28,7 +28,7 @@ def preprocess_data(df):
 
     # Encode categorical features
     if len(non_numeric_columns) > 0:
-        encoder = OneHotEncoder(drop='first', sparse=False)
+        encoder = OneHotEncoder(drop='first', sparse_output=False)
         encoded_data = encoder.fit_transform(df[non_numeric_columns])
         encoded_df = pd.DataFrame(encoded_data, columns=encoder.get_feature_names_out(non_numeric_columns), index=df.index)
         df = pd.concat([df[numeric_columns], encoded_df], axis=1)
