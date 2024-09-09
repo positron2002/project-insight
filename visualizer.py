@@ -31,9 +31,9 @@ def automated_eda(df):
         sns.heatmap(corr, annot=True, ax=ax)
         st.pyplot(fig)
     else:
-        st.write("Datatypes not suitable for this visualization")
-    
-    # Display pairplot horizontally if possible
+        st.write("No numeric columns available for correlation matrix")
+
+    # Display pairplot
     st.write("Pairplot:")
     if numeric_df.shape[1] > 0:
         pairplot_col1, pairplot_col2 = st.columns(2)
@@ -43,10 +43,10 @@ def automated_eda(df):
             fig = sns.pairplot(numeric_df)
             st.pyplot(fig)
     else:
-        st.write("Datatypes not suitable for this visualization")
-    
-    # Display distribution of each column in two columns (horizontally)
-    st.write("Distribution of each column:")
+        st.write("No numeric columns available for pairplot")
+
+    # Display distribution of numeric columns
+    st.write("Distribution of numeric columns:")
     if numeric_df.shape[1] > 0:
         cols = st.columns(2)  # Create two columns for the histograms
         for i, column in enumerate(numeric_df.columns):
@@ -63,4 +63,17 @@ def automated_eda(df):
                     st.write(f"Distribution of {column}")
                     st.pyplot(fig)
     else:
-        st.write("Datatypes not suitable for this visualization")
+        st.write("No numeric columns available for distribution plots")
+
+    # Display categorical features
+    categorical_df = df.select_dtypes(include=[object])
+    if categorical_df.shape[1] > 0:
+        st.write("Categorical Features Distribution:")
+        for column in categorical_df.columns:
+            st.write(f"Distribution of {column}:")
+            fig, ax = plt.subplots()
+            categorical_df[column].value_counts().plot(kind='bar', ax=ax)
+            ax.set_title(f'Distribution of {column}')
+            st.pyplot(fig)
+    else:
+        st.write("No categorical columns available for distribution plots")
